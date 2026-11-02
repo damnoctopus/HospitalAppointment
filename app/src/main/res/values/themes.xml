@@ -6,6 +6,8 @@
         <item name="colorPrimaryContainer">@color/teal_light</item>
         <item name="colorOnPrimaryContainer">@color/teal_dark</item>
         <item name="colorSecondary">@color/teal_dark</item>
+        <item name="colorSecondaryContainer">@color/teal_light</item>
+        <item name="colorOnSecondaryContainer">@color/teal_dark</item>
         <item name="colorSurface">@color/white</item>
         <item name="colorOnSurface">@color/ink</item>
         <item name="colorOnSurfaceVariant">@color/muted</item>
