@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='utf-8'?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android" style="@style/Card">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="20dp">
+        <TextView android:id="@+id/appointment_status" style="@style/Body" android:textColor="@color/teal_dark" android:textStyle="bold" android:layout_width="wrap_content" android:background="@drawable/badge" android:paddingStart="10dp" android:paddingEnd="10dp" android:paddingTop="6dp" android:paddingBottom="6dp" android:textSize="12sp" />
+        <TextView android:id="@+id/appointment_doctor" style="@style/Section" android:layout_marginTop="16dp" android:layout_marginBottom="4dp" android:textSize="20sp" />
+        <TextView android:id="@+id/appointment_specialty" style="@style/Body" />
+        <TextView android:id="@+id/appointment_when" style="@style/Body" android:background="@drawable/soft_gray" android:padding="16dp" android:layout_marginTop="14dp" android:textColor="@color/ink" android:drawableStart="@drawable/ic_calendar" android:drawablePadding="12dp" android:gravity="center_vertical" android:fontFamily="sans-serif-medium" />
+        <TextView android:id="@+id/appointment_patient" style="@style/Body" android:layout_marginTop="12dp" />
+        <LinearLayout android:id="@+id/appointment_actions" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

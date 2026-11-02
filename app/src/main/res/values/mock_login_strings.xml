@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="mock_username">Username</string>
+    <string name="mock_subtitle">Sign in to find care or manage appointments.</string>
+    <string name="mock_admin_fill">Fill admin demo details</string>
+    <string name="mock_login_hint">Mock login · College demo only\n\nAdmin: admin / admin123\nPatient: any other username and any non-empty password.\n\nUse the same username to return to your saved bookings. This is not real authentication.</string>
+</resources>

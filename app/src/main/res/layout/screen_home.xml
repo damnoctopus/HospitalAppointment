@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='utf-8'?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="0dp">
+    <TextView style="@style/Body" android:text="@string/screen_home_1" android:id="@+id/greeting" android:layout_marginBottom="8dp" android:textColor="@color/teal_dark" android:fontFamily="sans-serif-medium" />
+    <TextView style="@style/Title" android:text="@string/screen_home_2" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="22dp" android:orientation="horizontal" android:gravity="center_vertical" android:background="@drawable/soft_teal" android:padding="20dp" android:layout_marginBottom="8dp">
+        <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical">
+            <TextView style="@style/Body" android:text="@string/screen_home_3" android:textSize="11sp" android:letterSpacing="0.08" android:textColor="@color/teal_dark" />
+            <TextView style="@style/Title" android:layout_marginTop="8dp" android:text="@string/screen_home_4" android:textSize="30sp" />
+            <TextView style="@style/Body" android:layout_marginTop="8dp" android:text="@string/screen_home_5" />
+        </LinearLayout>
+        <ImageView android:layout_width="84dp" android:layout_height="112dp" android:layout_marginStart="8dp" android:src="@drawable/doctor_0" android:contentDescription="@string/screen_home_6" />
+    </LinearLayout>
+    <com.google.android.material.button.MaterialButton android:id="@+id/home_search" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="@string/screen_home_7" style="@style/CareOutlineButton" android:minHeight="52dp" app:icon="@drawable/ic_search" app:iconGravity="textStart" app:iconTint="@color/teal_dark" app:iconPadding="12dp" android:gravity="start|center_vertical" />
+    <TextView style="@style/Section" android:text="@string/screen_home_8" />
+    <com.google.android.material.chip.ChipGroup android:id="@+id/specialty_chips" android:layout_width="match_parent" android:layout_height="wrap_content" app:singleSelection="true" app:selectionRequired="true" app:chipSpacingHorizontal="8dp" android:layout_marginTop="8dp" android:layout_marginBottom="8dp" app:chipSpacingVertical="4dp" />
+    <TextView style="@style/Section" android:text="@string/screen_home_9" android:id="@+id/next_title" />
+    <LinearLayout android:id="@+id/next_visit" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
+        <TextView style="@style/Section" android:layout_width="0dp" android:layout_weight="1" android:text="@string/screen_home_10" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/view_all" style="@style/Widget.Material3.Button.TextButton" android:layout_width="wrap_content" android:layout_height="48dp" android:text="@string/screen_home_11" />
+    </LinearLayout>
+    <LinearLayout android:id="@+id/home_doctors" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" />
+</LinearLayout>

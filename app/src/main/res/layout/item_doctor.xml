@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='utf-8'?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android" style="@style/Card" android:id="@+id/doctor_card" android:clickable="true" android:focusable="true" android:foreground="?attr/selectableItemBackground">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:padding="18dp" android:gravity="center_vertical">
+        <ImageView android:id="@+id/doctor_avatar" android:layout_width="76dp" android:layout_height="88dp" android:contentDescription="@string/item_doctor_1" />
+        <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:orientation="vertical">
+            <TextView android:id="@+id/doctor_name" style="@style/Section" android:layout_marginTop="0dp" android:layout_marginBottom="4dp" android:textSize="18sp" />
+            <TextView android:id="@+id/doctor_specialty" style="@style/Body" android:textColor="@color/teal_dark" />
+            <TextView android:id="@+id/doctor_experience" style="@style/Body" android:layout_marginTop="7dp" android:textSize="13sp" />
+            <TextView android:id="@+id/doctor_availability" style="@style/Body" android:layout_marginTop="10dp" android:textSize="12sp" android:textColor="@color/teal_dark" android:fontFamily="sans-serif-medium" />
+        </LinearLayout>
+        <ImageView android:layout_width="20dp" android:layout_height="24dp" android:src="@drawable/ic_arrow" android:importantForAccessibility="no" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="0dp">
+    <TextView style="@style/Title" android:text="@string/screen_appointments_1" android:id="@+id/appointments_title" />
+    <TextView style="@style/Body" android:text="@string/screen_appointments_2" android:layout_marginTop="10dp" android:layout_marginBottom="8dp" />
+    <com.google.android.material.chip.ChipGroup android:id="@+id/status_chips" android:layout_width="match_parent" android:layout_height="wrap_content" app:singleSelection="true" app:selectionRequired="true" app:chipSpacingHorizontal="8dp" android:layout_marginTop="8dp" android:layout_marginBottom="8dp" app:chipSpacingVertical="4dp" />
+    <LinearLayout android:id="@+id/appointment_list" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="16dp" />
+</LinearLayout>

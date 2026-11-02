@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='utf-8'?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="0dp">
+    <TextView style="@style/Title" android:text="@string/screen_dashboard_1" />
+    <TextView style="@style/Body" android:text="@string/screen_dashboard_2" android:layout_marginTop="10dp" android:layout_marginBottom="8dp" />
+    <GridLayout android:id="@+id/stats_grid" android:layout_width="match_parent" android:layout_height="wrap_content" android:columnCount="2" android:layout_marginTop="20dp" />
+    <TextView style="@style/Section" android:text="@string/screen_dashboard_3" />
+    <com.google.android.material.button.MaterialButton android:id="@+id/dashboard_doctors" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="@string/screen_dashboard_4" app:icon="@drawable/ic_doctors" app:iconGravity="textStart" app:iconPadding="12dp" />
+    <com.google.android.material.button.MaterialButton android:id="@+id/dashboard_availability" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="@string/screen_dashboard_5" style="@style/CareOutlineButton" android:minHeight="52dp" app:icon="@drawable/ic_clock" app:iconGravity="textStart" app:iconPadding="12dp" />
+    <com.google.android.material.button.MaterialButton android:id="@+id/dashboard_appointments" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="@string/screen_dashboard_6" style="@style/CareOutlineButton" android:minHeight="52dp" app:icon="@drawable/ic_calendar" app:iconGravity="textStart" app:iconPadding="12dp" />
+    <com.google.android.material.button.MaterialButton android:id="@+id/dashboard_patient_login" style="@style/CareOutlineButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:minHeight="52dp" android:text="@string/patient_sign_in" app:icon="@drawable/ic_profile" app:iconGravity="textStart" app:iconPadding="12dp" />
+    <TextView style="@style/Section" android:text="@string/screen_dashboard_7" />
+    <LinearLayout android:id="@+id/today_list" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" />
+    <com.google.android.material.button.MaterialButton android:id="@+id/admin_logout" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="@string/screen_dashboard_8" style="@style/CareOutlineButton" android:minHeight="52dp" />
+</LinearLayout>

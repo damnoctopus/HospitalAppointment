@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='utf-8'?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/main" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:background="@color/background">
+    <com.google.android.material.appbar.MaterialToolbar android:id="@+id/toolbar" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="60dp" android:background="@color/white" app:titleTextColor="@color/ink" app:titleTextAppearance="@style/CareToolbarTitle" />
+    <FrameLayout android:id="@+id/screen_host" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+        <ScrollView android:id="@+id/scroll" android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true" android:clipToPadding="false">
+            <LinearLayout android:id="@+id/content" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_gravity="top|center_horizontal" android:orientation="vertical" android:padding="20dp" />
+        </ScrollView>
+    </FrameLayout>
+    <com.google.android.material.bottomnavigation.BottomNavigationView android:id="@+id/bottom_nav" android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@color/white" app:itemIconTint="@color/nav_item" app:itemTextColor="@color/nav_item" app:itemActiveIndicatorStyle="@style/Widget.Material3.BottomNavigationView.ActiveIndicator" app:labelVisibilityMode="labeled" app:menu="@menu/patient_nav" android:elevation="8dp" app:itemIconSize="22dp" />
+</LinearLayout>

@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='utf-8'?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="0dp">
+    <TextView style="@style/Title" android:text="@string/screen_booking_1" />
+    <TextView style="@style/Body" android:text="@string/screen_booking_2" android:layout_marginTop="10dp" android:layout_marginBottom="8dp" />
+    <LinearLayout android:id="@+id/booking_doctor" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="16dp" />
+    <TextView style="@style/Section" android:text="@string/screen_booking_3" />
+    <TextView style="@style/Body" android:id="@+id/available_dates_hint" android:text="@string/available_dates_hint" />
+    <HorizontalScrollView android:layout_width="match_parent" android:layout_height="wrap_content" android:scrollbars="none">
+        <com.google.android.material.chip.ChipGroup android:id="@+id/date_chips" android:layout_width="wrap_content" android:layout_height="wrap_content" app:singleLine="true" app:singleSelection="true" app:selectionRequired="true" app:chipSpacingHorizontal="8dp" android:layout_marginTop="8dp" android:layout_marginBottom="8dp" app:chipSpacingVertical="4dp" />
+    </HorizontalScrollView>
+    <com.google.android.material.button.MaterialButton android:id="@+id/select_date" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="@string/screen_booking_4" style="@style/CareOutlineButton" android:minHeight="52dp" app:icon="@drawable/ic_calendar" app:iconGravity="textStart" app:iconPadding="12dp" />
+    <TextView style="@style/Section" android:text="@string/screen_booking_5" />
+    <TextView android:id="@+id/slot_count" style="@style/Body" />
+    <com.google.android.material.chip.ChipGroup android:id="@+id/slot_chips" android:layout_width="match_parent" android:layout_height="wrap_content" app:singleSelection="true" app:selectionRequired="true" app:chipSpacingHorizontal="8dp" android:layout_marginTop="8dp" android:layout_marginBottom="8dp" app:chipSpacingVertical="4dp" />
+    <TextView style="@style/Body" android:text="@string/screen_booking_6" android:id="@+id/slot_empty" />
+    <com.google.android.material.button.MaterialButton android:id="@+id/next_available_date" style="@style/CareOutlineButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:text="@string/find_next_available" />
+    <TextView android:id="@+id/booking_summary" style="@style/Body" android:layout_marginTop="16dp" android:layout_marginBottom="16dp" android:padding="16dp" android:background="@drawable/soft_teal" android:textColor="@color/teal_dark" android:text="@string/booking_summary_hint" />
+    <TextView style="@style/Body" android:text="@string/screen_booking_7" />
+    <com.google.android.material.button.MaterialButton android:id="@+id/confirm_booking" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="@string/confirm_appointment_request" />
+</LinearLayout>
