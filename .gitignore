@@ -17,3 +17,16 @@ local.properties
 /emulator-error.log
 /app/build
 /screenshots
+
+# Local Android Studio settings and Firebase project credentials
+/.idea/
+google-services*.json
+.firebaserc
+firebase-debug*.log
+*service-account*.json
+*firebase-adminsdk*.json
+.env
+.env.*
+!.env.example
+*.jks
+*.keystore

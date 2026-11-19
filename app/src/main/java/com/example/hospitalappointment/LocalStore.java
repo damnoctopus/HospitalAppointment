@@ -215,7 +215,7 @@ public class LocalStore {
         for (String key : schedules) availability.remove(key);
         save();
     }
-    public void save() {
+    public java.util.Map<String,Object> cloudData() {
         try {
             JSONArray ds = new JSONArray(), as = new JSONArray();
             for (Doctor d : doctors) ds.put(new JSONObject().put("id", d.id).put("name", d.name)
@@ -224,9 +224,56 @@ public class LocalStore {
             for (Appointment a : appointments) as.put(new JSONObject().put("id", a.id).put("doctorId", a.doctorId)
                     .put("doctorName", a.doctorName).put("specialty", a.specialty).put("patientName", a.patientName)
                     .put("patientEmail", a.patientEmail).put("date", a.date).put("time", a.time).put("status", a.status));
-            prefs.edit().putString("doctors", ds.toString()).putString("appointments", as.toString())
-                    .putString("users", users.toString()).putString("availability", availability.toString()).apply();
+            java.util.Map<String,Object> data = new java.util.HashMap<>();
+            data.put("schemaVersion",1L); data.put("doctors",ds.toString());
+            data.put("appointments",as.toString()); data.put("availability",availability.toString());
+            return data;
         } catch (JSONException e) { throw new IllegalStateException(e); }
+    }
+    public void save() {
+        if (prefs == null) return; // Transaction working copies must never write device preferences.
+        java.util.Map<String,Object> data = cloudData();
+        prefs.edit().putString("doctors",(String)data.get("doctors"))
+                .putString("appointments",(String)data.get("appointments"))
+                .putString("availability",(String)data.get("availability"))
+                .putString("users",users.toString()).apply();
+    }
+    public LocalStore cloudCopy(java.util.Map<String,Object> data) {
+        return new LocalStore(data,users.toString());
+    }
+    private LocalStore(java.util.Map<String,Object> data,String localUsers) {
+        prefs = null;
+        try {
+            if (!(data.get("schemaVersion") instanceof Number)
+                    || ((Number)data.get("schemaVersion")).intValue() != 1)
+                throw new IllegalArgumentException("Unsupported cloud data version");
+            users = new JSONArray(localUsers);
+            availability = new JSONObject((String)data.get("availability"));
+            JSONArray ds = new JSONArray((String)data.get("doctors"));
+            for (int i=0;i<ds.length();i++) {
+                JSONObject d=ds.getJSONObject(i);
+                doctors.add(new Doctor(d.getString("id"),d.getString("name"),d.getString("specialty"),
+                        d.getString("qualification"),d.getInt("experience"),d.getInt("portrait")));
+            }
+            JSONArray records = new JSONArray((String)data.get("appointments"));
+            for (int i=0;i<records.length();i++) {
+                JSONObject j=records.getJSONObject(i); Appointment a=new Appointment();
+                a.id=j.getString("id"); a.doctorId=j.getString("doctorId"); a.doctorName=j.getString("doctorName");
+                a.specialty=j.getString("specialty"); a.patientName=j.getString("patientName");
+                a.patientEmail=j.getString("patientEmail"); a.date=j.getString("date");
+                a.time=j.getString("time"); a.status=j.getString("status"); appointments.add(a);
+            }
+        } catch (JSONException | NullPointerException e) { throw new IllegalArgumentException("Invalid cloud data",e); }
+    }
+    public void applyCloudData(java.util.Map<String,Object> data) {
+        LocalStore parsed=cloudCopy(data); // Parse completely before replacing cached records.
+        doctors.clear(); doctors.addAll(parsed.doctors);
+        appointments.clear(); appointments.addAll(parsed.appointments);
+        availability=parsed.availability; save();
+    }
+    public Appointment appointment(String id) {
+        for (Appointment a:appointments) if (a.id.equals(id)) return a;
+        return null;
     }
     public static String today() { return dateKey(Calendar.getInstance()); }
     public static String dateKey(Calendar date) { return new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(date.getTime()); }

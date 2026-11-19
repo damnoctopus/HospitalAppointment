@@ -1,5 +1,7 @@
 # HospitalAppointment
 
+Firebase integration is available while retaining the mock login. See [FIREBASE_SETUP.md](FIREBASE_SETUP.md) to connect your project, enable Anonymous Authentication, and publish the shared demo rules. Until `app/google-services.json` is added, the app runs locally. With Firebase configured, doctors, availability, and appointments use Firestore transactions and a local viewing cache. Run the existing instrumentation tests in local mode; live two-device checks are described in the setup guide.
+
 A native Android college project built with **Java activities and XML layouts**. Package: `com.example.hospitalappointment`. Minimum SDK: **24**. The original Gradle configuration and Material Components dependencies are preserved.
 
 ## Run

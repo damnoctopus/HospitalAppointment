@@ -1,0 +1,4 @@
+<resources>
+    <string name="firebase_local_status">Local demo · Firebase setup required</string>
+    <string name="firebase_setup_help">Add google-services.json to app/, enable Anonymous sign-in in Firebase Authentication, create Cloud Firestore, and publish firestore.rules. Rebuild afterward. See FIREBASE_SETUP.md for the steps.</string>
+</resources>

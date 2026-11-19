@@ -1,0 +1,21 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Shared academic demo only: mock usernames do not establish trusted roles.
+    match /hospitalDemos/collegeDemo {
+      allow read: if request.auth != null;
+      allow create, update: if request.auth != null
+        && request.resource.data.keys().hasAll(['schemaVersion','doctors','appointments','availability'])
+        && request.resource.data.keys().hasOnly(['schemaVersion','doctors','appointments','availability'])
+        && request.resource.data.schemaVersion == 1
+        && request.resource.data.doctors is string
+        && request.resource.data.appointments is string
+        && request.resource.data.availability is string
+        && request.resource.data.doctors.size() < 150000
+        && request.resource.data.appointments.size() < 450000
+        && request.resource.data.availability.size() < 150000;
+      allow delete: if false;
+    }
+    match /{document=**} { allow read, write: if false; }
+  }
+}

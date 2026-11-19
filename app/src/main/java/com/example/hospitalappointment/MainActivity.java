@@ -36,6 +36,7 @@ import java.util.UUID;
 /** XML screens with direct handlers, backed by the device-only LocalStore. */
 public class MainActivity extends AppCompatActivity {
     private LocalStore store;
+    private CloudStore cloud;
     private LinearLayout content;
     private MaterialToolbar toolbar;
     private BottomNavigationView nav;
@@ -84,6 +85,45 @@ public class MainActivity extends AppCompatActivity {
             else if (screen.equals("detail") && store.doctor(selectedDoctor) != null) showDetail(selectedDoctor);
             else navigate(currentTab);
         }
+        cloud=new CloudStore(this,store,new CloudStore.Observer() {
+            public void status(String value) { if (!isDestroyed()) text(findViewById(R.id.main),R.id.cloud_status,value); }
+            public void changed() { if (!isDestroyed()) refreshScreen(); }
+        });
+        findViewById(R.id.cloud_status).setOnClickListener(view -> {
+            if (cloud.configured()) cloud.start();
+            else new MaterialAlertDialogBuilder(this).setTitle("Firebase setup")
+                .setMessage(R.string.firebase_setup_help).setPositiveButton("OK",null).show();
+        });
+        cloud.start();
+    }
+    @Override protected void onDestroy() {
+        if (cloud != null) cloud.close();
+        super.onDestroy();
+    }
+    private void refreshScreen() {
+        if (email.isEmpty() || !getWindow().getDecorView().hasWindowFocus()) return;
+        if (screen.equals("detail")) showDetail(selectedDoctor);
+        else if (screen.equals("booking")) showBooking(selectedDoctor);
+        else if (!screen.equals("doctors")) switchTab(currentTab);
+    }
+    private void changeData(CloudStore.Mutation mutation,Runnable success) {
+        String startingUser=email;
+        cloud.change(mutation,error -> {
+            if (isDestroyed()) return;
+            if (error != null) { message(error.getMessage() == null ? "Could not save. Please retry." : error.getMessage()); refreshScreen(); }
+            else if (email.equals(startingUser)) success.run();
+        });
+    }
+    private void changeStatus(LocalStore.Appointment original,String status,Runnable refresh) {
+        changeData(working -> {
+            LocalStore.Appointment current=working.appointment(original.id);
+            if (current == null || !current.status.equals(original.status))
+                throw new IllegalStateException("This appointment changed. Please refresh and try again.");
+            if (!current.active()) throw new IllegalStateException("This visit is already closed.");
+            if (status.equals(LocalStore.CONFIRMED) && !LocalStore.future(current.date,current.time))
+                throw new IllegalStateException("This appointment time has passed.");
+            current.status=status;
+        },refresh);
     }
     @Override protected void onSaveInstanceState(Bundle out) {
         out.putString("screen", screen); out.putInt("tab", currentTab); out.putString("doctor", selectedDoctor);
@@ -225,7 +265,7 @@ public class MainActivity extends AppCompatActivity {
         v.findViewById(R.id.edit_doctor).setVisibility(admin ? View.VISIBLE : View.GONE); v.findViewById(R.id.remove_doctor).setVisibility(admin ? View.VISIBLE : View.GONE);
         click(v,R.id.book_doctor,() -> { selectedDate = nextDate; selectedSlot = ""; showBooking(id); });
         click(v,R.id.edit_doctor,() -> doctorForm(d));
-        click(v,R.id.remove_doctor,() -> confirm("Remove " + d.name + "?","Active appointments with this doctor will be cancelled. Previous visits will remain in appointment history.","Remove",() -> { store.removeDoctor(d); navigate(R.id.nav_doctors); }));
+        click(v,R.id.remove_doctor,() -> confirm("Remove " + d.name + "?","Active appointments with this doctor will be cancelled. Previous visits will remain in appointment history.","Remove",() -> changeData(working -> { LocalStore.Doctor current=working.doctor(d.id); if (current != null) working.removeDoctor(current); },() -> navigate(R.id.nav_doctors))));
     }
     private String joinTimes(List<String> times) {
         StringBuilder result = new StringBuilder();
@@ -280,11 +320,17 @@ public class MainActivity extends AppCompatActivity {
         click(v,R.id.confirm_booking,() -> new MaterialAlertDialogBuilder(this).setTitle("Request this appointment?")
                 .setMessage(d.name + "\n" + LocalStore.displayDate(selectedDate) + " at " + LocalStore.displayTime(selectedSlot))
                 .setNegativeButton("Go back",null).setPositiveButton("Confirm request",(dialog,which) -> {
-                    LocalStore.Appointment a = store.book(d,email,selectedDate,selectedSlot);
-                    if (a == null) { message("This slot is unavailable or overlaps another booking. Choose another time."); selectedSlot = ""; showBooking(id); return; }
-                    new MaterialAlertDialogBuilder(this).setIcon(R.drawable.ic_check).setTitle("Appointment requested")
-                            .setMessage("Your visit with " + d.name + " is saved. The admin will confirm your booking.\n\n" + LocalStore.displayDate(a.date) + " · " + LocalStore.displayTime(a.time))
+                    String date=selectedDate, time=selectedSlot, patient=email;
+                    LocalStore.Appointment[] booked=new LocalStore.Appointment[1];
+                    changeData(working -> {
+                        booked[0]=working.book(working.doctor(d.id),patient,date,time);
+                        if (booked[0] == null) throw new IllegalStateException("This slot is no longer available. Choose another time.");
+                    },() -> {
+                        LocalStore.Appointment a=booked[0];
+                        new MaterialAlertDialogBuilder(this).setIcon(R.drawable.ic_check).setTitle("Appointment requested")
+                            .setMessage("Your visit with " + a.doctorName + " is saved. The admin will confirm your booking.\n\n" + LocalStore.displayDate(a.date) + " · " + LocalStore.displayTime(a.time))
                             .setCancelable(false).setPositiveButton("View my appointments",(success,w) -> { appointmentFilter = "Upcoming"; navigate(R.id.nav_appointments); }).show();
+                    });
                 }).show());
     }
     private void updateBookingSummary(View v, LocalStore.Doctor doctor) {
@@ -304,10 +350,10 @@ public class MainActivity extends AppCompatActivity {
         text(v,R.id.appointment_patient,"Patient: " + a.patientName + "\n" + store.displayIdentity(a.patientEmail)); v.findViewById(R.id.appointment_patient).setVisibility(admin ? View.VISIBLE : View.GONE);
         ViewGroup actions = v.findViewById(R.id.appointment_actions);
         if (admin && a.status.equals(LocalStore.PENDING) && LocalStore.future(a.date,a.time))
-            action(actions,"Confirm appointment",() -> confirm("Confirm appointment?",a.doctorName + " with " + a.patientName,"Confirm",() -> { a.status = LocalStore.CONFIRMED; store.save(); refresh.run(); }));
+            action(actions,"Confirm appointment",() -> confirm("Confirm appointment?",a.doctorName + " with " + a.patientName,"Confirm",() -> changeStatus(a,LocalStore.CONFIRMED,refresh)));
         if (admin && a.status.equals(LocalStore.CONFIRMED) && !LocalStore.future(a.date,a.time))
-            action(actions,"Mark completed",() -> confirm("Mark visit completed?","This will move the visit into completed appointments.","Complete",() -> { a.status = LocalStore.COMPLETED; store.save(); refresh.run(); }));
-        if (a.active()) action(actions,"Cancel appointment",() -> confirm("Cancel this appointment?","This will release the reserved slot for another patient.","Cancel visit",() -> { a.status = LocalStore.CANCELLED; store.save(); refresh.run(); }));
+            action(actions,"Mark completed",() -> confirm("Mark visit completed?","This will move the visit into completed appointments.","Complete",() -> changeStatus(a,LocalStore.COMPLETED,refresh)));
+        if (a.active()) action(actions,"Cancel appointment",() -> confirm("Cancel this appointment?","This will release the reserved slot for another patient.","Cancel visit",() -> changeStatus(a,LocalStore.CANCELLED,refresh)));
         list.addView(v);
     }
     private void showAppointments() {
@@ -365,10 +411,22 @@ public class MainActivity extends AppCompatActivity {
             try { experience = Integer.parseInt(input(form,R.id.form_experience)); if (experience < 0 || experience > 60) throw new NumberFormatException(); }
             catch (NumberFormatException e) { ((EditText)form.findViewById(R.id.form_experience)).setError("Enter 0–60 years"); return; }
             if (!valid) return;
-            LocalStore.Doctor d = doctor == null ? new LocalStore.Doctor(UUID.randomUUID().toString(),name,special,qualification,experience,store.doctors.size()%4) : doctor;
-            d.name = name; d.specialty = special; d.qualification = qualification; d.experience = experience;
-            if (doctor == null) store.doctors.add(d); store.save(); dialog.dismiss();
-            if (screen.equals("detail")) showDetail(d.id); else showDoctors(); message("Doctor saved");
+            String doctorId=doctor == null ? UUID.randomUUID().toString() : doctor.id;
+            int years=experience;
+            dialog.getButton(-1).setEnabled(false);
+            cloud.change(working -> {
+                LocalStore.Doctor d=working.doctor(doctorId);
+                if (doctor != null && d == null) throw new IllegalStateException("This doctor was removed on another device.");
+                if (d == null) { d=new LocalStore.Doctor(doctorId,name,special,qualification,years,working.doctors.size()%4); working.doctors.add(d); }
+                d.name=name; d.specialty=special; d.qualification=qualification; d.experience=years;
+            },error -> {
+                if (isDestroyed()) return;
+                dialog.getButton(-1).setEnabled(true);
+                if (error != null) { message(error.getMessage()); return; }
+                dialog.dismiss();
+                if (screen.equals("detail")) showDetail(doctorId); else showDoctors();
+                message("Doctor saved");
+            });
         })); dialog.show();
     }
     private void showAvailability() {
@@ -388,7 +446,8 @@ public class MainActivity extends AppCompatActivity {
             if (minute != 0 && minute != 30) { message("Choose a 30-minute slot, such as 10:00 or 10:30."); return; }
             String time = String.format(Locale.US,"%02d:%02d",hour,minute);
             if (!LocalStore.future(selectedDate,time)) { message("Choose a time in the future."); return; }
-            if (!store.setSlot(selectedDoctor,selectedDate,time,true)) message("This time slot already exists."); renderAvailability(v);
+            String doctorId=selectedDoctor,date=selectedDate;
+            changeData(working -> { if (!working.setSlot(doctorId,date,time,true)) throw new IllegalStateException("This slot already exists or the doctor was removed."); },this::showAvailability);
         },9,0,false).show()); renderAvailability(v);
     }
     private void renderAvailability(View v) {
@@ -399,7 +458,10 @@ public class MainActivity extends AppCompatActivity {
             chip.setText(LocalStore.displayTime(time) + (reserved ? " · Reserved" : "  ×")); chip.setContentDescription(LocalStore.displayTime(time) + (reserved ? ", reserved" : ", tap to remove"));
             chip.setOnClickListener(button -> {
                 if (reserved) { message("Cancel the appointment before removing its time slot."); return; }
-                confirm("Remove time slot?",LocalStore.displayDate(selectedDate) + " at " + LocalStore.displayTime(time),"Remove",() -> { store.setSlot(selectedDoctor,selectedDate,time,false); renderAvailability(v); });
+                confirm("Remove time slot?",LocalStore.displayDate(selectedDate) + " at " + LocalStore.displayTime(time),"Remove",() -> {
+                    String doctorId=selectedDoctor,date=selectedDate;
+                    changeData(working -> { if (!working.setSlot(doctorId,date,time,false)) throw new IllegalStateException("This slot was just reserved and cannot be removed."); },this::showAvailability);
+                });
             }); group.addView(chip);
         }
         v.findViewById(R.id.availability_empty).setVisibility(slots.isEmpty() ? View.VISIBLE : View.GONE);
